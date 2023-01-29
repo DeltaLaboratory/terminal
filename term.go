@@ -265,7 +265,6 @@ func (t *Terminal) RunLocalShell() error {
 // RunWithConnection starts the terminal by connecting to an external resource like an SSH connection.
 func (t *Terminal) RunWithConnection(in io.WriteCloser, out io.Reader) error {
 	for t.config.Columns == 0 { // don't load the TTY until our output is configured
-		print("wait")
 		time.Sleep(time.Millisecond * 50)
 	}
 	t.in = in
