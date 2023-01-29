@@ -43,7 +43,7 @@ type Terminal struct {
 	scrollTop, scrollBottom      int
 
 	cursor                   *canvas.Rectangle
-	cursorHidden, bufferMode bool // buffer mode is an xterm extension that impacts control keys
+	cursorHidden, bufferMode bool // buffer mode is a xterm extension that impacts control keys
 	cursorMoved              func()
 
 	onMouseDown, onMouseUp func(int, fyne.KeyModifier, fyne.Position)
@@ -265,6 +265,7 @@ func (t *Terminal) RunLocalShell() error {
 // RunWithConnection starts the terminal by connecting to an external resource like an SSH connection.
 func (t *Terminal) RunWithConnection(in io.WriteCloser, out io.Reader) error {
 	for t.config.Columns == 0 { // don't load the TTY until our output is configured
+		print("wait")
 		time.Sleep(time.Millisecond * 50)
 	}
 	t.in = in
@@ -285,29 +286,6 @@ func (t *Terminal) Write(b []byte) (int, error) {
 	return t.in.Write(b)
 }
 
-func (t *Terminal) setupShortcuts() {
-	t.ShortcutHandler.AddShortcut(&desktop.CustomShortcut{KeyName: fyne.KeyV, Modifier: fyne.KeyModifierShift | fyne.KeyModifierControl},
-		func(_ fyne.Shortcut) {
-			a := fyne.CurrentApp()
-			c := a.Driver().CanvasForObject(t)
-			if c == nil {
-				return
-			}
-
-			var win fyne.Window
-			for _, w := range a.Driver().AllWindows() {
-				if w.Canvas() == c {
-					win = w
-				}
-			}
-			if win == nil {
-				return
-			}
-
-			_, _ = t.in.Write([]byte(win.Clipboard().Content()))
-		})
-}
-
 func (t *Terminal) startingDir() string {
 	if t.startDir == "" {
 		home, err := os.UserHomeDir()
@@ -324,7 +302,5 @@ func New() *Terminal {
 	t := &Terminal{}
 	t.ExtendBaseWidget(t)
 	t.content = widget.NewTextGrid()
-	t.setupShortcuts()
-
 	return t
 }

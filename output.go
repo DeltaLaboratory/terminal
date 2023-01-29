@@ -191,6 +191,7 @@ func handleOutputCarriageReturn(t *Terminal) {
 }
 
 func handleOutputLineFeed(t *Terminal) {
+	t.cursorCol = 0
 	if t.cursorRow == t.scrollBottom {
 		t.scrollDown()
 	} else {
