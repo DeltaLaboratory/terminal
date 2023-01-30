@@ -119,7 +119,6 @@ func (t *Terminal) handleOutput(buf []byte) {
 func (t *Terminal) handleOutputChar(r rune) {
 	if t.cursorCol >= int(t.config.Columns) || t.cursorRow >= int(t.config.Rows) {
 		handleOutputLineFeed(t)
-		t.handleOutputChar(r)
 	}
 	for len(t.content.Rows)-1 < t.cursorRow {
 		t.content.Rows = append(t.content.Rows, widget.TextGridRow{})
